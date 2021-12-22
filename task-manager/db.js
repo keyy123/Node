@@ -60,14 +60,29 @@ MongoClient.connect(url,{useNewUrlParser:true}, (error,client)=>{
 // return console.log(chalk.bgRed("Unable to update the document...", error))
 // })
 
-db.collection('tasks').updateMany({done:false},{$set:{done:true}})
-.then((result)=>{
-    return console.log(chalk.blueBright.underline.inverse('You did your tasks!Woo!!', result.acknowledged))
-}
-).catch((error)=>{
-    return console.log(chalk.bgRedBright('Error',error))
-})
+// db.collection('tasks').updateMany({done:false},{$set:{done:true}})
+// .then((result)=>{
+//     return console.log(chalk.blueBright.underline.inverse('You did your tasks!Woo!!', result.acknowledged))
+// }
+// ).catch((error)=>{
+//     return console.log(chalk.bgRedBright('Error',error))
+// })
 
+// db.collection('users').deleteMany(
+//     {age:{$lt:23}}
+// ).then((result)=>{
+// return console.log(result.deletedCount)
+// }).catch((error)=>{
+// return console.log(error)
+// })
+
+db.collection('tasks').deleteOne(
+    {task:"Workout"}
+).then((result)=>{
+    return console.log(result.deletedCount)
+}).catch((error)=>{
+    return console.log(error)
+})
 
 
 })
