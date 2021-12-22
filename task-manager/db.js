@@ -15,15 +15,30 @@ MongoClient.connect(url,{useNewUrlParser:true}, (error,client)=>{
     }
     const db = client.db(dbName)
     
-    // db.collection('users').findOne({_id:ObjectId("61ba6697a5582723a24ddc92")},(error, result)=>{
+    // db.collection('tasks').insertMany([
+    //     {task: "Clean Room", done: false},
+    //     {task: "Buy Food", done: true},
+    //     {task: "Shower", done: false},
+    //     {task: "Hang up clean clothes", done: false},
+    //     {task: "Workout", done: false}
+    // ],(error, result)=>{
     //     if(error){
-    //         return console.log(`Unable to find tasks that was done`)
+    //         return console.log('Unable to insert documents into collection')
     //     }
-    //     return console.log(`${Object.entries(result)}`)
+    //     return console.log(`Inserted ${result.insertedCount} documents into collection`)
     // })
 
-    db.collection('users').find({ $or:[{name:/K/},{name:/T/}, ]}).toArray((error, result)=>{
+    db.collection('tasks').find({done:false}).toArray((error, result)=>{
+        if(error){
+            return console.log('Unable to find documents matching that query')
+        }
+        console.log(result)
+    })
 
+    db.collection('tasks').findOne(new ObjectId('61c2c9b366a650e7fe7a9cd7'), (error,result)=>{
+        if(error){
+            return console.log('Unable to find a document with that ID')
+        }
         console.log(result)
     })
 
