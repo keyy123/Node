@@ -17,13 +17,21 @@ const UserSchema = new Schema({
         type: String,
         minlength: [7, "The password is too short"],
         trim: true,
+        //This is the validate option using the function 
         validate(value){
-            if(contains(value, "password",{ignoreCase:true, minOccurrences: 1})){
+            if(contains(value, "password",{ignoreCase: true, minOccurrences:1})){
                 throw new Error('The password should not contain password in it, try again')
             }
         },
+    // This is validate containing an object {} - with the validator property
+    //     validate: {
+    //         validator: (value) =>{
+    //         if(contains(value, "password",{ignoreCase:true, minOccurrences: 1})){
+    //             throw new Error('The password should not contain password in it, try again')
+    //         }
+    //     }
+    // },
         required:true
-
     }
 })
 
