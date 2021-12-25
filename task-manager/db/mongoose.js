@@ -21,14 +21,17 @@ connect('mongodb://127.0.0.1:27017/task-manager-api',{})
 // })
 
 const TaskSchema = new Schema({
-    details: {type: String},
-    done: {type: Boolean}
+    details: {
+        type: String,
+        minlength: [3, 'Must be at least 3 letters, got {VALUE} ']
+    },
+    done: {type: Boolean, required:true}
 })
 
 const Tasks = new model('Tasks', TaskSchema)
 
 const myTasks = new Tasks({
-    details: "Prepare Large Trash For Bulk Day",
+    details: "hi",
     done: false
 })
 
