@@ -1,19 +1,4 @@
-
-
-
-const chalk = require('chalk')
-const {MongoClient, ObjectId} = require('mongodb')
-//const MongoClient = mongodb.MongoClient this is the same as above
-const url = "mongodb://127.0.0.1:27017"
-const dbName = "task-manager"
-
-
-
-MongoClient.connect(url,{useNewUrlParser:true}, (error,client)=>{
-    if(error){
-        return console.log(chalk.bgRed(`Unable to link to database: ${error.message}`))
-    }
-    const db = client.db(dbName)
+    These are the example MongoDB node driver commands to Create - Read - Update - Delete
     
     // db.collection('tasks').insertMany([
     //     {task: "Clean Room", done: false},
@@ -76,13 +61,11 @@ MongoClient.connect(url,{useNewUrlParser:true}, (error,client)=>{
 // return console.log(error)
 // })
 
-db.collection('tasks').deleteOne(
-    {task:"Workout"}
-).then((result)=>{
-    return console.log(result.deletedCount)
-}).catch((error)=>{
-    return console.log(error)
-})
+// db.collection('tasks').deleteOne(
+//     {task:"Workout"}
+// ).then((result)=>{
+//     return console.log(result.deletedCount)
+// }).catch((error)=>{
+//     return console.log(error)
+// })
 
-
-})
