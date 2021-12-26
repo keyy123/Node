@@ -4,7 +4,6 @@ require('./db/mongoose') //import mongoose connection so it runs when express se
 const User = require('./model/user') //imports user model for use in express server
 const Task = require('./model/task')
 const port = process.env.PORT || 3001
-const {ObjectId} = require('mongoose')
 
 app.use(express.json()) //allows us to receive req.body as json
 
