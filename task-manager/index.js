@@ -16,7 +16,7 @@ app.get("/users/:id", (req,res)=>{
 })
 
 app.get("/users", (req, res)=>{
-   User.find({}).then((users)=>{
+   User.find(req.body).then((users)=>{
         res.send(users)
     }).catch((error)=>{
         res.status(404).send(error)
@@ -52,6 +52,7 @@ app.post("/users", (req,res)=>{
 
 //Using a param for .then or w/o param works 
 
+
 app.post("/tasks", (req, res)=>{
 const newTask = new Task(req.body)
 newTask.save().then(()=>{
@@ -61,6 +62,29 @@ res.status(201).send(newTask)
 res.status(400).send(error)
 })
 })
+
+
+//Task GET endpoints
+app.get("/tasks", (req,res)=>{
+    Task.find({}).then((tasks)=>{
+        res.status(200).send(tasks)
+    }).catch((error)=>{
+        res.status(404).send(error)
+    })
+})
+
+app.get("/tasks/:id", (req, res)=>{
+    console.log(req.params)
+    let id = req.params.id
+    Task.findById(id).then((task)=>{
+        res.status(200).send(task)
+    }).catch((error)=>{
+        res.status(404).send(error)
+    })
+})
+
+
+
 
 
 app.listen(port, ()=>{
