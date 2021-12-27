@@ -17,6 +17,9 @@ app.get("/users/:id", (req,res)=>{
 
 app.get("/users", (req, res)=>{
    User.find(req.body).then((users)=>{
+       if(!user){
+           res.status(404).send()
+       }
         res.send(users)
     }).catch((error)=>{
         res.status(404).send(error)
@@ -35,6 +38,9 @@ app.get("/users/:id", (req, res)=>{
 
     //Both works but findbyid works with a little less thought but its preference I guess
     User.findById(id).then((user)=>{
+        if(!user){
+            res.status(404).send()
+        }
         res.status(200).send(user)
     }).catch((error)=>{
         res.status(404).send(error)
@@ -44,6 +50,9 @@ app.get("/users/:id", (req, res)=>{
 app.post("/users", (req,res)=>{
     const newUser = new User(req.body)
     newUser.save().then((user)=>{
+        if(!user){
+            res.status(400).send()
+        }
         res.status(201).send(user)
     }).catch((error)=>{
         res.status(400).send(error)
@@ -56,6 +65,9 @@ app.post("/users", (req,res)=>{
 app.post("/tasks", (req, res)=>{
 const newTask = new Task(req.body)
 newTask.save().then(()=>{
+    if(!newTask){
+        res.status(400).send()
+    }
 res.status(201).send(newTask)
 }
 ).catch((error)=>{
@@ -67,6 +79,9 @@ res.status(400).send(error)
 //Task GET endpoints
 app.get("/tasks", (req,res)=>{
     Task.find({}).then((tasks)=>{
+        if(!tasks){
+            res.status(404).send()
+        }
         res.status(200).send(tasks)
     }).catch((error)=>{
         res.status(404).send(error)
@@ -77,6 +92,9 @@ app.get("/tasks/:id", (req, res)=>{
     console.log(req.params)
     let id = req.params.id
     Task.findById(id).then((task)=>{
+        if(!task){
+            res.status(404).send()
+        }
         res.status(200).send(task)
     }).catch((error)=>{
         res.status(404).send(error)
