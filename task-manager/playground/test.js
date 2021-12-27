@@ -1,6 +1,5 @@
 require('../db/mongoose.js')
 const User = require('../model/user')
-
 User.findOneAndUpdate({name:"Guest"},{name:"BJ"}).then((user)=>{
     if(!user){
         res.status(404).send()
@@ -12,3 +11,4 @@ User.findOneAndUpdate({name:"Guest"},{name:"BJ"}).then((user)=>{
 }).catch((e)=>{
     console.log(e)
 })
+

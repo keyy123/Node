@@ -22,8 +22,8 @@ const add = (a, b) => {
 // })
 
 
-//Promise Chaining
-
+//Promise Chaining - can allow infinite chaining and no duplicated error handlers
+//You return another promise within the callback (then) and keep the chain going
 add(1,2).then((sum)=>{
     console.log(sum)
     return add(sum, 7)

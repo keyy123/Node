@@ -7,4 +7,6 @@ Task.findByIdAndDelete(id).then((task)=>{
     return Task.countDocuments({done:false}).then((undone)=>{
         console.log(undone)
     })
+}).catch((e)=>{
+    console.log(e)
 })
