@@ -1,10 +1,4 @@
-const add = (a, b) => {
-   return new Promise((resolve, reject)=>{
-       setTimeout(()=>{
-            resolve(a + b)
-       },2000)
-   })
-}
+ 
 
 //Basic Chaining =/= Promise Chaining - The intuitive idea to put a promise in a promise whihc works but with drawbacks
 //We have the same error code and the more nested the data is the harder it'll be to maintain and/or refactor it
