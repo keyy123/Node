@@ -1,6 +1,7 @@
 const {Router} = require('express')
 const router = Router()
 const Task = require('../../model/task')
+
 router.post("/tasks", async (req, res)=>{
     // const newTask = new Task(req.body)
     // newTask.save().then(()=>{
@@ -76,8 +77,12 @@ router.post("/tasks", async (req, res)=>{
             let updates = Object.keys(req.body)
             let allowedUpdates = ["details", "done"]
             let isTrue = updates.every((update)=> allowedUpdates.includes(update))
-            const task = await Task.findByIdAndUpdate(req.params.id, req.body,{new:true, runValidator:true})
-    
+            // const task = await Task.findByIdAndUpdate(req.params.id, req.body,{new:true, runValidator:true})
+            const task = await Task.findById(req.params.id)
+            updates.forEach((update)=>{
+                task[update] = req.body[update]
+            })
+            await task.save()
             if(!isTrue){
                 return res.status(400).send()
             }
@@ -87,6 +92,7 @@ router.post("/tasks", async (req, res)=>{
             res.send(task)
         }catch(e){
     res.status(400).send(e)
+    console.log(e)
         }
     })
     

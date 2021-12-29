@@ -1,5 +1,6 @@
 const {Schema, model} = require('mongoose')
 const {contains} = require('validator')
+const bcrypt = require('bcryptjs')
 
 const UserSchema = new Schema({
     name: {
@@ -33,6 +34,19 @@ const UserSchema = new Schema({
         trim: true
     }
 })
+
+UserSchema.pre('save', async function(next){
+const user = this
+    if(user.isModified('password')){
+        user.password = await bcrypt.hash(user.password, 8)
+        console.log(user.password)
+    }
+next()
+})
+// UserSchema.pre('findByIdAndUpdate',{document:true, query: false}, async function(next){
+//     console.log(this, 'updating')
+//     next()
+// })
 
 const User = new model('User', UserSchema)
 
