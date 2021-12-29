@@ -14,17 +14,22 @@ router.post("/users", async (req,res)=>{
     // })
 const newUser = new User(req.body)
 try{
-    if(!newUser){
-        return res.status(400).send()
-     }
     await newUser.save()
-    res.send(newUser)
+    res.status(201).send(newUser)
 }catch(e){
-    res.status(500).send(e)
-    console.log(e)
+    res.status(400).send(e)
 }
 })
 
+router.post("/users/login", async (req, res)=>{
+    try{
+      let user = await User.findByCredentials(req.body.email, req.body.password)
+        res.send(user)
+    }catch(e){
+        res.status(400).send()
+        console.log(e)
+    }
+})
 
 
 router.get("/users", async (req, res)=>{
@@ -58,19 +63,19 @@ router.get("/users", async (req, res)=>{
 
     
     router.patch("/users/:id", async(req,res)=>{
+        let updates = Object.keys(req.body)
+        let allowedUpdates = ['name','age','password']
+        let isTrue = updates.every((update)=> allowedUpdates.includes(update))
+        if(!isTrue){
+            return res.status(400).send()
+        }
             try{
-                let updates = Object.keys(req.body)
-                let allowedUpdates = ['name','age','password']
-                let isTrue = updates.every((update)=> allowedUpdates.includes(update))
+             
                 // let user = await User.findByIdAndUpdate(req.params.id, req.body, {new:true, runValidator:true})
                 let user = await User.findById(req.params.id)
-                updates.forEach((x)=>{
-                    user[x] = req.body[x]
-                })
+                updates.forEach((x)=>user[x] = req.body[x])
                 await user.save()
-                if(!isTrue){
-                    return res.status(400).send()
-                }
+             
                  if(!user){
                      return res.status(404).send()
                  }

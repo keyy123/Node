@@ -7,9 +7,17 @@ const UserSchema = new Schema({
         type:String, 
         default: "Guest"
     },
-    age: {
-        type: Number, 
-        default: 1
+    email: {
+        type: String, 
+        unique:true,
+        required:true,
+        trim: true,
+        lowercase:true,
+        validate(value){
+            if(contains(value,"email",{ignoreCase:true, minOccurences:1})){
+                throw new Error('Your email has the word email in it. I don\'t think thats a thing... 😂. Try a different email')
+            }
+        }
     },
     password:{
         type: String,
@@ -29,24 +37,39 @@ const UserSchema = new Schema({
     //         }
     //     }
     // },
-        required:true,
-        lowercase:true,
-        trim: true
+        required:true
     }
 })
 
-UserSchema.pre('save', async function(next){
+UserSchema.statics.findByCredentials = async (email, password) => {
+const user = await User.findOne({email})
+console.log(user)
+if (!user){
+    throw new Error('unable to login')
+}
+const isMatch = await bcrypt.compare(password, user.password)
+console.log(user.password, password)
+if (!isMatch){
+    throw new Error('unable to login')
+}
+
+return user
+
+}
+
+
+UserSchema.pre('save', async function (next) {
+
 const user = this
-    if(user.isModified('password')){
+
+    if (user.isModified('password')){
         user.password = await bcrypt.hash(user.password, 8)
-        console.log(user.password)
     }
+
 next()
 })
-// UserSchema.pre('findByIdAndUpdate',{document:true, query: false}, async function(next){
-//     console.log(this, 'updating')
-//     next()
-// })
+
+
 
 const User = new model('User', UserSchema)
 
