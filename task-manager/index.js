@@ -16,9 +16,27 @@ app.listen(port, ()=>{
 const JWT = require('jsonwebtoken')
 
 const work = async() => {
-const key = "me-777"
-const token = await JWT.sign({data:key},'thisisaroom',{expiresIn:"1 day"})
-return console.log(token)
-}
 
+const key = "me-777"
+const token = await JWT.sign({
+ data: key 
+}, 
+'secret',
+{expiresIn:'1h'})
+if(!token){
+   throw new Error("Unable to login")
+}
+console.log(token)
+let verifiedToken = await JWT.verify(token, 'secret')
+if(!verifiedToken){
+   throw new Error('Unable to login')
+}
+console.log(verifiedToken)
+let decodedToken = await JWT.decode(token, {complete:true})
+if(!decodedToken){
+throw new Error('Unable to login')
+}
+console.log(decodedToken.header, decodedToken.payload)
+console.log(decodedToken.payload.data === verifiedToken.data)
+}
 work()

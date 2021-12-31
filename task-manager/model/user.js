@@ -1,6 +1,7 @@
 const {Schema, model} = require('mongoose')
 const {contains} = require('validator')
 const bcrypt = require('bcryptjs')
+const {sign, verify, decode, JsonWebTokenError} = require('jsonwebtoken')
 
 const UserSchema = new Schema({
     name: {
@@ -38,8 +39,23 @@ const UserSchema = new Schema({
     //     }
     // },
         required:true
-    }
+    },
+    tokens:[{
+        token:{
+            type: String,
+            required:true
+        }
+    }]
 })
+
+UserSchema.methods.generateAuthToken = async function(){
+const user = this 
+const token = await sign({_id:user._id.toString()},'secret')
+//user.tokens = []
+user.tokens.push({token})
+await user.save()
+return token
+}
 
 UserSchema.statics.findByCredentials = async (email, password) => {
 const user = await User.findOne({email})
