@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose')
+const {Schema, model, SchemaTypes} = require('mongoose')
 const {equals} = require('validator')
 
 const TaskSchema = new Schema({
@@ -17,6 +17,11 @@ const TaskSchema = new Schema({
             }
         },
         default: false
+    },
+    owner: {
+        type: SchemaTypes.ObjectId,
+        required: true,
+        ref: 'User'
     }
 })
 

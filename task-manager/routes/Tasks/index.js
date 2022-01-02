@@ -1,23 +1,15 @@
 const {Router} = require('express')
 const router = Router()
 const Task = require('../../model/task')
+const auth = require('../../middleware/auth')
 
-router.post("/tasks", async (req, res)=>{
+router.post("/tasks", auth, async (req, res)=>{
     // const newTask = new Task(req.body)
-    // newTask.save().then(()=>{
-    //     if(!newTask){
-    //         res.status(400).send()
-    //     }
-    // res.status(201).send(newTask)
-    // }
-    // ).catch((error)=>{
-    // res.status(400).send(error)
-    // })
-    const newTask = new Task(req.body)
+    const newTask = new Task({
+        ...req.body,
+        owner: req.user._id
+    })
     try{
-        if(!newTask){
-            return res.status(400).send()
-        }
     await newTask.save()
     res.send(newTask)
     }catch(e){
@@ -27,7 +19,7 @@ router.post("/tasks", async (req, res)=>{
     
     
     //Task GET endpoints
-    router.get("/tasks", async (req,res)=>{
+    router.get("/tasks", auth, async (req,res)=>{
         // Task.find({}).then((tasks)=>{
         //     if(!tasks){
         //         res.status(404).send()
@@ -37,7 +29,10 @@ router.post("/tasks", async (req, res)=>{
         //     res.status(404).send(error)
         // })
         try{
-            const allTasks = await Task.find({})
+            const allTasks = await Task.find({owner:req.user._id})
+            //alternative 
+            //await req.user.populate('tasks')
+            //res.send(req.user.tasks)
             const taskCount = await Task.countDocuments({})
             console.log(taskCount)
             if(!allTasks){
@@ -49,7 +44,7 @@ router.post("/tasks", async (req, res)=>{
         }
     })
     
-    router.get("/tasks/:id", async (req, res)=>{
+    router.get("/tasks/:id", auth,  async (req, res)=>{
         let id = req.params.id
         // Task.findById(id).then((task)=>{
         //     if(!task){
@@ -61,7 +56,8 @@ router.post("/tasks", async (req, res)=>{
         // })
     
         try{
-            const oneTask = await Task.findById(id)
+            //const oneTask = await Task.findById(id)
+            const oneTask = await Task.findOne({id, owner: req.user._id}) 
             if(!oneTask){
                 res.status(404).send()
             }
@@ -72,23 +68,24 @@ router.post("/tasks", async (req, res)=>{
     })
     
     
-    router.patch("/tasks/:id", async(req, res)=>{
+    router.patch("/tasks/:id", auth, async(req, res)=>{
         try{
             let updates = Object.keys(req.body)
             let allowedUpdates = ["details", "done"]
             let isTrue = updates.every((update)=> allowedUpdates.includes(update))
             // const task = await Task.findByIdAndUpdate(req.params.id, req.body,{new:true, runValidator:true})
-            const task = await Task.findById(req.params.id)
+            // const task = await Task.findById(req.params.id)
+            const task = await Task.findOne({_id:req.params.id, owner:req.user._id})
+            if(!task){
+                return res.status(404).send()
+            }
+            if(!isTrue){
+                return res.status(400).send()
+            }
             updates.forEach((update)=>{
                 task[update] = req.body[update]
             })
             await task.save()
-            if(!isTrue){
-                return res.status(400).send()
-            }
-            if(!task){
-                return res.status(404).send()
-            }
             res.send(task)
         }catch(e){
     res.status(400).send(e)
@@ -96,9 +93,10 @@ router.post("/tasks", async (req, res)=>{
         }
     })
     
-    router.delete("/tasks/:id", async(req,res)=>{
+    router.delete("/tasks/:id", auth, async(req,res)=>{
         try{
-            const task = await Task.findByIdAndDelete(req.params.id)
+            // const task = await Task.findByIdAndDelete(req.params.id)
+            const task = await Task.findOneAndDelete({_id: req.params.id, owner: req.user._id})
             if(!task){
                 return res.status(404).send()
             }

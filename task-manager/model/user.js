@@ -48,6 +48,12 @@ const UserSchema = new Schema({
     }]
 })
 
+UserSchema.virtual("tasks",{
+    ref: "Tasks",
+    localField: "_id",
+    foreignField:"owner"
+})
+
 UserSchema.methods.generateAuthToken = async function(){
 const user = this 
 const token = await sign({_id:user._id.toString()},'secret')
@@ -55,6 +61,15 @@ const token = await sign({_id:user._id.toString()},'secret')
 user.tokens.push({token})
 await user.save()
 return token
+}
+
+UserSchema.methods.toJSON =  function(){
+    let user = this
+    let userObject = user.toObject()
+    delete userObject.password
+    delete userObject.tokens
+    return userObject
+
 }
 
 UserSchema.statics.findByCredentials = async (email, password) => {
