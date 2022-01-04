@@ -2,7 +2,10 @@ const {Router} = require('express')
 const router = Router()
 const auth = require('../../middleware/auth')
 const User = require("../../model/user")
-
+const multer = require("multer")
+const upload = multer({
+    dest:"avatars"
+})
 
 router.post("/users", async (req,res)=>{
     // newUser.save().then((user)=>{
@@ -126,4 +129,9 @@ router.post("/users/logoutall", auth, async (req, res)=>{
         }
     })
     
+    router.post("/users/me/avatar", upload.single('avatar'), (req,res)=>{
+        res.send()
+    })
+
+
     module.exports = router

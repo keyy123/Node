@@ -29,17 +29,23 @@ router.post("/tasks", auth, async (req, res)=>{
         //     res.status(404).send(error)
         // })
         let match = {} //made a variable for the match object
+        let sort = {}
         let allTasks;
         let taskCount; 
         if(req.query.done){
             match.done = req.query.done === 'true' // made a new prop in match called done and value is true or false - varies if our query has done set to true or not
         }
+
+        if(req.query.sort){
+            let parts = req.query.sort.split(":")//{sort: "[createdAt]:[asc]"}
+            sort[parts[0]] = parts[1] === "desc" ? -1 : 1
+        }
         try{
             if(req.query.done){
-             allTasks = await Task.find({owner:req.user._id, done:match.done},{details: 1, done: 1, owner: 1},{limit: parseInt(req.query.limit), skip: parseInt(req.query.skip)})
+             allTasks = await Task.find({owner:req.user._id, done:match.done},{details: 1, done: 1, owner: 1},{limit: parseInt(req.query.limit), skip: parseInt(req.query.skip), sort})
              taskCount = await Task.countDocuments({owner:req.user._id, done:match.done})
             }else{
-             allTasks = await Task.find({owner:req.user._id},null,{limit: parseInt(req.query.limit), skip: parseInt(req.query.skip)})
+             allTasks = await Task.find({owner:req.user._id},null,{limit: parseInt(req.query.limit), skip: parseInt(req.query.skip), sort})
              taskCount = await Task.countDocuments({owner: req.user._id})
             }
             if(!allTasks){
