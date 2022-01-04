@@ -28,17 +28,32 @@ router.post("/tasks", auth, async (req, res)=>{
         // }).catch((error)=>{
         //     res.status(404).send(error)
         // })
+        let match = {} //made a variable for the match object
+        let allTasks;
+        let taskCount; 
+        if(req.query.done){
+            match.done = req.query.done === 'true' // made a new prop in match called done and value is true or false - varies if our query has done set to true or not
+        }
         try{
-            const allTasks = await Task.find({owner:req.user._id})
-            //alternative 
-            //await req.user.populate('tasks')
-            //res.send(req.user.tasks)
-            const taskCount = await Task.countDocuments({})
-            console.log(taskCount)
+            if(req.query.done){
+             allTasks = await Task.find({owner:req.user._id, done:match.done},{details: 1, done: 1, owner: 1},{limit: parseInt(req.query.limit), skip: parseInt(req.query.skip)})
+             taskCount = await Task.countDocuments({owner:req.user._id, done:match.done})
+            }else{
+             allTasks = await Task.find({owner:req.user._id},null,{limit: parseInt(req.query.limit), skip: parseInt(req.query.skip)})
+             taskCount = await Task.countDocuments({owner: req.user._id})
+            }
             if(!allTasks){
                 res.status(404).send()
             }
-            res.status(200).send(allTasks)
+            //alternative 
+            // await req.user.populate({
+            // path:'tasks',
+            // match
+            // })
+            //res.send(req.user.tasks)
+            // res.send(allTasks)
+            
+            res.status(200).send({allTasks, taskCount})
         }catch(e){
             res.status(500).send()
         }

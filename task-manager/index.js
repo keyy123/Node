@@ -28,14 +28,14 @@ app.listen(port, ()=>{
    return console.log(`listening to connection at http://localhost:${port}`)
 })
 
-const main = async() => {
-// const task = await Task.findById("61d0e8f6f30e835a790566ed")
-// await task.populate('owner')
-// console.log(task)
+// const main = async() => {
+// // const task = await Task.findById("61d0e8f6f30e835a790566ed")
+// // await task.populate('owner')
+// // console.log(task)
 
-const user = await User.findById("61d0e86d1e4aa5e99d758070")
-await user.populate("tasks")
-console.log(user.tasks)
-}
+// const user = await User.findById("61d3908f3fa5674ccf3e2fb4")
+// await user.populate("tasks")
+// console.log(user, user.tasks)
+// }
 
-main()
+// main()

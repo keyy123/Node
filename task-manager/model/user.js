@@ -2,6 +2,7 @@ const {Schema, model} = require('mongoose')
 const {contains} = require('validator')
 const bcrypt = require('bcryptjs')
 const {sign, verify, decode, JsonWebTokenError} = require('jsonwebtoken')
+const Tasks = require('./task')
 
 const UserSchema = new Schema({
     name: {
@@ -46,7 +47,7 @@ const UserSchema = new Schema({
             required:true
         }
     }]
-})
+}, {timestamps:true})
 
 UserSchema.virtual("tasks",{
     ref: "Tasks",
@@ -90,16 +91,18 @@ return user
 
 
 UserSchema.pre('save', async function (next) {
-
 const user = this
-
     if (user.isModified('password')){
         user.password = await bcrypt.hash(user.password, 8)
     }
-
 next()
 })
 
+UserSchema.pre('remove', async function(next){
+    const user = this 
+    await Tasks.deleteMany({owner: user._id}) //deletes Tasks associated with the user via _id
+    next() 
+})
 
 
 const User = new model('User', UserSchema)
