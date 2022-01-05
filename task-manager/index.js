@@ -14,11 +14,3 @@ app.listen(port, ()=>{
    return console.log(`listening to connection at http://localhost:${port}`)
 })
 
-// const multer = require('multer')
-// const uploads = multer({
-//    dest:"images"
-// })
-
-// app.post("/uploads", uploads.single('upload'), (req, res)=>{
-// res.send()
-// })

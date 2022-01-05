@@ -41,6 +41,9 @@ const UserSchema = new Schema({
     // },
         required:true
     },
+    profile :{
+        type: Buffer
+    },
     tokens:[{
         token:{
             type: String,
@@ -69,6 +72,7 @@ UserSchema.methods.toJSON =  function(){
     let userObject = user.toObject()
     delete userObject.password
     delete userObject.tokens
+    delete userObject.profile
     return userObject
 
 }

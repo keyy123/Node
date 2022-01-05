@@ -3,19 +3,10 @@ const router = Router()
 const auth = require('../../middleware/auth')
 const User = require("../../model/user")
 const multer = require("multer")
-const upload = multer({
-    dest:"avatars"
-})
+const sharp = require('sharp')
 
 router.post("/users", async (req,res)=>{
-    // newUser.save().then((user)=>{
-    //     if(!user){
-    //         res.status(400).send()
-    //     }
-    //     res.status(201).send(user)
-    // }).catch((error)=>{
-    //     res.status(400).send(error)
-    // })
+   
 const newUser = new User(req.body)
 try{
     const token = await newUser.generateAuthToken()
@@ -129,9 +120,52 @@ router.post("/users/logoutall", auth, async (req, res)=>{
         }
     })
     
-    router.post("/users/me/avatar", upload.single('avatar'), (req,res)=>{
-        res.send()
+    const upload = multer({
+        // dest:"avatars", w/o dest we have a new prop on req.file called buffer which we can use with Mongoose
+        limits:{
+            fileSize: 1000000
+        },
+        fileFilter(req, file, cb){
+            if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
+                return cb(new Error("Please upload a JPG, JPEG or PNG image"))
+            }
+            cb(null, true)
+        }
     })
+
+    router.post("/users/me/avatar", auth, upload.single('avatar'), async (req,res)=>{
+        const buffer = await sharp(req.file.buffer).resize({width:250}).png().toBuffer()
+        req.user.profile = buffer
+        await req.user.save()
+        res.send()
+    },(error, req, res, next)=>{
+        res.status(400).send({error:error.message})
+    })
+
+    router.delete("/users/me/avatar", auth, async(req, res)=>{
+        try{
+        req.user.profile = undefined
+        await req.user.save()
+        res.send()
+        }catch(e){
+            res.status(500).send({e:e.message})
+        }
+    })
+
+    router.get("/users/:id/avatar", async(req, res)=>{
+        try{
+            const user = await User.findById(req.params.id)
+            if(!user||!user.profile){
+                throw new Error("Could not find profile of undefined")
+            }
+            res.set("Content-Type","image/png")
+            res.send(user.profile)
+        }catch(e){
+            res.status(404).send()
+        }
+    })
+
+   //Send Grid Key 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
 
 
     module.exports = router
