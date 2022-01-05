@@ -1,6 +1,6 @@
 const sgMail = require('@sendgrid/mail')
 
-const sendgridAPIKey = "my supposed api key which nobody should see at all!"
+const sendgridAPIKey = "my supposed api key which nobody should see at all. Or I'll be cancelled, again!"
 
 sgMail.setApiKey(sendgridAPIKey)
 
